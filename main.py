@@ -19,7 +19,11 @@ class Blog(db.Model):
 
 
 @app.route('/', methods=['POST', 'GET'])
-def index():
+def home_redirect():
+    return redirect('/blog')
+
+@app.route('/blog', methods=['POST', 'GET'])
+def display_blog():
 
     blog_entries = Blog.query.all()
 
@@ -32,19 +36,23 @@ def new_post():
     blog_entries = Blog.query.all()
 
     if request.method == 'POST':
-        title_input = request.form['blog-title']
-        content_input = request.form['blog-entry']
+        title = request.form['title']
+        entry = request.form['entry']
 
-        if title_input == "" or content_input == "":
-            flash("Title and entry must contain text!")
+        if title == "" or entry == "":
+            flash("Title and entry must contain text!", "error")
+            title = title
+            entry = entry
+            return render_template('newpost.html', title=title, entry=entry)
         else:
-            blog_entry = Blog(title_input, content_input)
+            blog_entry = Blog(title, entry)
             db.session.add(blog_entry)
             db.session.commit()
             return redirect('/')
 
+    return render_template('newpost.html', blog_entries=blog_entries)
 
-    return render_template('newpost.html',title="Build-a-Blog!", blog_entries=blog_entries)
 
 if __name__ == '__main__':
+    app.secret_key = "screeblegloobleshmuh"
     app.run()

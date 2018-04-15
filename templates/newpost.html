@@ -5,13 +5,21 @@
 <form method="post">
         <label>
             Title:
-            <input type="text" name='blog-title' />
+            <input type="text" name='title' value="{{ title }}" />
         </label>
+        <br>
         <label>
             Entry:
-            <input type="textarea" name='blog-entry' />
+            <input type="textarea" name='entry' value="{{ entry }}" />
         </label>
         <input type="submit" value="Add entry!" />
+        {% with messages = get_flashed_messages(with_categories=True) %}
+            <ul>
+            {% for category,message in messages %}
+                <li class="{{category}}">{{message}}</li>
+            {% endfor %}
+            </ul>
+        {% endwith %}
     </form>
 
 {% endblock %}
