@@ -10,7 +10,7 @@
         <ul>
             {% for entry in blog_entries %}
             <li>
-                <h2>{{entry.name}}</h2>
+                <h2><a href="/blog?id={{ entry.id }}">{{entry.name}}</a></h2>
                 <br>
                 {{entry.entry}}
             </li>

@@ -1,5 +1,7 @@
 from flask import Flask, request, redirect, render_template, flash
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import exists
+
 
 app = Flask(__name__)
 app.config['DEBUG'] = True
@@ -20,20 +22,28 @@ class Blog(db.Model):
 
 @app.route('/', methods=['POST', 'GET'])
 def home_redirect():
+
     return redirect('/blog')
 
 @app.route('/blog', methods=['POST', 'GET'])
 def display_blog():
 
-    blog_entries = Blog.query.all()
-
-    return render_template('blog.html',title="Build-a-Blog!", blog_entries=blog_entries)
+    blog_id = request.args.get('id')
+    if blog_id == None:
+        blog_entries = Blog.query.all()
+    else:
+        blog_entry = Blog.query.get(int(blog_id))
+        if blog_entry == None:
+            print(blog_entry)
+            return redirect('/blog')
+        blog_entries = [blog_entry]
+    return render_template('blog.html', title="Build-a-Blog!", blog_entries=blog_entries)
+        
+    
 
 
 @app.route('/newpost', methods=['POST', 'GET'])
 def new_post():
-
-    blog_entries = Blog.query.all()
 
     if request.method == 'POST':
         title = request.form['title']
@@ -48,9 +58,9 @@ def new_post():
             blog_entry = Blog(title, entry)
             db.session.add(blog_entry)
             db.session.commit()
-            return redirect('/')
+            return redirect('/blog?id=' + str(blog_entry.id))
 
-    return render_template('newpost.html', blog_entries=blog_entries)
+    return render_template('newpost.html')
 
 
 if __name__ == '__main__':
