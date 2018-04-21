@@ -66,6 +66,7 @@ def new_post():
     if request.method == 'POST':
         title = request.form['title']
         entry = request.form['entry']
+        author = Blog.owner_id
 
         if title == "" or entry == "":
             flash("Title and entry must contain text!", "error")
@@ -73,7 +74,7 @@ def new_post():
             entry = entry
             return render_template('newpost.html', title=title, entry=entry)
         else:
-            blog_entry = Blog(title, entry)
+            blog_entry = Blog(title, entry, author)
             db.session.add(blog_entry)
             db.session.commit()
             return redirect('/blog?id=' + str(blog_entry.id))
