@@ -16,6 +16,9 @@
             <td>
                 <input name="password" type="password">
             </td>
+            {% if login_error %}
+            <p class='error'>{{ login_error }}</p>
+            {% endif %}
         </tr>
     </table>
     <input type="submit" value="Login">

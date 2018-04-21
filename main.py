@@ -65,11 +65,21 @@ def display_blog():
         blog_entries = [blog_entry]
     return render_template('blog.html', title="Build-a-Blog!", blog_entries=blog_entries)
     
-# TODO: Sign Up Function:
-# User enters a valid new username and password, and is redirected to the /newpost page with their username stored in a session.
-# User gets an error message if:
-#   username, password, or verify forms are blank, invalid, or passwords don't match
-#   username already exists in the database
+@app.route('/login', methods=['POST', 'GET'])
+def login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        user = User.query.filter_by(username=username).first()
+        if user and user.password == password:
+            session['username'] = username
+            flash("Logged in")
+            return redirect('/newpost')
+        else:
+            login_error = "User password incorrect, or user does not exist"
+            return render_template('login.html', login_error=login_error)
+
+    return render_template('login.html')
 
 @app.route('/signup', methods=['POST', 'GET'])
 def sign_up():
