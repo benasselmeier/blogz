@@ -1,4 +1,4 @@
-from flask import Flask, request, redirect, render_template, session, flash
+from flask import Flask, flash, redirect, render_template, request, session
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import exists
 
@@ -6,9 +6,9 @@ from sqlalchemy import exists
 # Sign Up function: will show "duplicate user" error, but after showing "invalid username" error, won't go back to showing "duplicate user"
 # under the correct conditions.
 #
+# Joining blog owner and blog content together using MYSQL
 #
-#
-#
+# Before login function is only allowing a redirect to login, when /blog and /signup are in the allowed routes.
 #
 #
 
@@ -18,6 +18,7 @@ app.config['DEBUG'] = True
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://blogz:password@localhost:8889/blogz'
 app.config['SQLALCHEMY_ECHO'] = True
 db = SQLAlchemy(app)
+app.secret_key = "screeblegloobleshmuh"
 
 class Blog(db.Model):
 
@@ -45,12 +46,6 @@ class User(db.Model):
     def __repr__(self):
         return '<User %r>' % self.username
 
-
-@app.route('/', methods=['POST', 'GET'])
-def home_redirect():
-
-    return redirect('/blog')
-
 @app.route('/blog', methods=['POST', 'GET'])
 def display_blog():
 
@@ -64,6 +59,13 @@ def display_blog():
             return redirect('/blog')
         blog_entries = [blog_entry]
     return render_template('blog.html', title="Build-a-Blog!", blog_entries=blog_entries)
+
+@app.before_request
+def require_login():
+    allowed_routes = ['login', 'signup', 'blog']
+    if request.endpoint not in allowed_routes and 'username' not in session:
+        return redirect('/login')
+
     
 @app.route('/login', methods=['POST', 'GET'])
 def login():
@@ -151,7 +153,11 @@ def new_post():
 
     return render_template('newpost.html')
 
+@app.route('/logout')
+def logout():
+    del session['username']
+    return redirect('/login')
+
 
 if __name__ == '__main__':
-    app.secret_key = "screeblegloobleshmuh"
     app.run()
