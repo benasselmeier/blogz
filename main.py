@@ -6,13 +6,17 @@ from sqlalchemy import exists
 # Sign Up function: will show "duplicate user" error, but after showing "invalid username" error, won't go back to showing "duplicate user"
 # under the correct conditions.
 #
-# Joining blog owner and blog content together using MYSQL
-#
-# Before login function is only allowing a redirect to login, when /blog and /signup are in the allowed routes.
 #
 #
 
 
+#def get_logged_in_user():
+#   return User.query.filter_by(username=session['username']).all()
+#
+#def get_blogs(logged_in_user):
+#   return Blog.query.filter_by()
+#
+#
 app = Flask(__name__)
 app.config['DEBUG'] = True
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://blogz:password@localhost:8889/blogz'
@@ -37,7 +41,7 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(20), unique=True)
     password = db.Column(db.String(20))
-    blogs = db.relationship('Blog', backref='author')
+    relationship = db.relationship('Blog', backref='author')
        
     def __init__(self, username, password):
         self.username = username
@@ -45,6 +49,13 @@ class User(db.Model):
 
     def __repr__(self):
         return '<User %r>' % self.username
+
+@app.before_request
+def require_login():
+    allowed_routes = ['login', 'signup', 'index']
+    if (request.endpoint not in allowed_routes) and ('username' not in session):
+        print(request.endpoint)
+        return redirect('/login')
 
 @app.route('/blog', methods=['POST', 'GET'])
 def display_blog():
@@ -60,13 +71,16 @@ def display_blog():
         blog_entries = [blog_entry]
     return render_template('blog.html', title="Build-a-Blog!", blog_entries=blog_entries)
 
-@app.before_request
-def require_login():
-    allowed_routes = ['login', 'signup', 'blog']
-    if request.endpoint not in allowed_routes and 'username' not in session:
-        return redirect('/login')
-
+@app.route('/')
+def index():
     
+    
+
+    user_list = User.query.all()
+
+    return render_template('index.html', title="Blog Authors", user_list=user_list)
+
+
 @app.route('/login', methods=['POST', 'GET'])
 def login():
     if request.method == 'POST':
@@ -84,7 +98,7 @@ def login():
     return render_template('login.html')
 
 @app.route('/signup', methods=['POST', 'GET'])
-def sign_up():
+def signup():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
@@ -138,7 +152,7 @@ def new_post():
     if request.method == 'POST':
         title = request.form['title']
         entry = request.form['entry']
-        author = Blog.owner_id
+        author = User.query.filter_by(username=session['username']).first()
 
         if title == "" or entry == "":
             flash("Title and entry must contain text!", "error")
