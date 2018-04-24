@@ -10,7 +10,7 @@
     <a href="/newpost">Add a Blog Entry:</a>
     </div>
     
-        <h1>View the blog of:</h1>
+        <h1>View the blog of: </h1>
     
         {% if user_list|length == 0 %}
         <p>No one's posted yet! Be the first.</p>
@@ -19,7 +19,7 @@
             <ul>
                 {% for user in user_list %}
                 <li>
-                    <h2><a href="/?id={{ user.id }}">{{user.name}}</a></h2>
+                    <h2><a href="/user?id={{ user.id }}">{{user.username}}</a></h2>
                     <br>
                 </li>
                 {% endfor %}

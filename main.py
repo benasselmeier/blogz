@@ -73,11 +73,9 @@ def display_blog():
 
 @app.route('/')
 def index():
-    
-    
 
     user_list = User.query.all()
-
+    
     return render_template('index.html', title="Blog Authors", user_list=user_list)
 
 

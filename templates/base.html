@@ -7,11 +7,23 @@
             }
             .navigation {
                 color: blue;
+                display:inline;
+                margin:auto;
+                padding:10px;
+            }
+            .link {
+                margin: 5px;
             }
         </style>
         <title>{{title}}</title>
     </head>
 <body>
+
+        <div class="navigation">
+                <span class="link"><a href="/blog">Main Blog Page</a></span>
+                <span class="link"><a href="/newpost">Add a Blog Entry:</a></span>
+                <span class="link"><a href="/logout">Logout</a></span>
+        </div>
 
 
     {% block content %}
