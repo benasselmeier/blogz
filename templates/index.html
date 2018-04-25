@@ -1,14 +1,6 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>index</h1>
-
-<div class="navigation">
-    <a href="/blog">Main Blog Page</a>
-    <br>
-    <br>
-    <a href="/newpost">Add a Blog Entry:</a>
-    </div>
     
         <h1>View the blog of: </h1>
     
@@ -19,7 +11,7 @@
             <ul>
                 {% for user in user_list %}
                 <li>
-                    <h2><a href="/user?id={{ user.id }}">{{user.username}}</a></h2>
+                    <h2><a href="?user={{ user.user }}">{{user.username}}</a></h2>
                     <br>
                 </li>
                 {% endfor %}

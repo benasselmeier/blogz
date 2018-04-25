@@ -6,15 +6,8 @@ from sqlalchemy import exists
 # Sign Up function: will show "duplicate user" error, but after showing "invalid username" error, won't go back to showing "duplicate user"
 # under the correct conditions.
 #
+# "Written By" is currently displayed as <User 'username'>
 #
-#
-
-
-#def get_logged_in_user():
-#   return User.query.filter_by(username=session['username']).all()
-#
-#def get_blogs(logged_in_user):
-#   return Blog.query.filter_by()
 #
 #
 app = Flask(__name__)
@@ -41,7 +34,7 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(20), unique=True)
     password = db.Column(db.String(20))
-    relationship = db.relationship('Blog', backref='author')
+    entries = db.relationship('Blog', backref='author')
        
     def __init__(self, username, password):
         self.username = username
@@ -65,10 +58,15 @@ def display_blog():
         blog_entries = Blog.query.all()
     else:
         blog_entry = Blog.query.get(int(blog_id))
+        author = Blog.author
         if blog_entry == None:
             print(blog_entry)
             return redirect('/blog')
         blog_entries = [blog_entry]
+
+    author = Blog.author
+ 
+
     return render_template('blog.html', title="Build-a-Blog!", blog_entries=blog_entries)
 
 @app.route('/')
