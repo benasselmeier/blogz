@@ -3,11 +3,8 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import exists
 
 # THINGS TO ASK ABOUT:
-# Sign Up function: will show "duplicate user" error, but after showing "invalid username" error, won't go back to showing "duplicate user"
-# under the correct conditions.
 #
-# "Written By" is currently displayed as <User 'username'>
-#
+# Password error?
 #
 #
 app = Flask(__name__)
@@ -41,7 +38,7 @@ class User(db.Model):
         self.password = password
 
     def __repr__(self):
-        return '<User %r>' % self.username
+        return self.username
 
 @app.before_request
 def require_login():
@@ -54,23 +51,30 @@ def require_login():
 def display_blog():
 
     blog_id = request.args.get('id')
-    if blog_id == None:
-        blog_entries = Blog.query.all()
-    else:
+    displayed_user = request.args.get('user')
+    blog_entries = Blog.query.all()
+    print(blog_id)
+    if blog_id == None and displayed_user is not None:
+        print("clicked on a user")
+        displayed_user = request.args.get('user')
+        author = User.query.filter_by(username=displayed_user).first()
+        user_entries = author.entries
+        print(displayed_user, author)
+        return render_template('userentries.html', title="Here's your blog!", user_entries=user_entries, author=author)
+    elif displayed_user == None and blog_id is not None:
+        print("clicked on an entry")
         blog_entry = Blog.query.get(int(blog_id))
-        author = Blog.author
         if blog_entry == None:
-            print(blog_entry)
+            print("blog entry is none")
             return redirect('/blog')
         blog_entries = [blog_entry]
-
-    author = Blog.author
- 
 
     return render_template('blog.html', title="Build-a-Blog!", blog_entries=blog_entries)
 
 @app.route('/')
 def index():
+
+    displayed_user = request.args.get('user')
 
     user_list = User.query.all()
     

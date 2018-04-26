@@ -2,14 +2,14 @@
 
 {% block content %}
 
-    <h1>Yo dawg, we heard you like blogs.</h1>
+<h1>{{author}}'s blog</h1>
 
-    {% if blog_entries|length == 0 %}
-    <p>No entries yet.</p>
+    {% if user_entries|length == 0 %}
+    <p>{{author}} has no entries yet.</p>
     {% else %}
 
         <ul>
-            {% for entry in blog_entries %}
+            {% for entry in user_entries %}
             <li>
                 <h2><a href="/blog?id={{ entry.id }}">{{entry.name}}</a></h2>
                 <br>
@@ -21,4 +21,5 @@
         </ul>
 
     {% endif %}
+
 {% endblock %}
