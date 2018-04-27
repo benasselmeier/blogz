@@ -42,13 +42,13 @@ class User(db.Model):
 
 @app.before_request
 def require_login():
-    allowed_routes = ['login', 'signup', 'index']
+    allowed_routes = ['login', 'signup', 'index', 'blog']
     if (request.endpoint not in allowed_routes) and ('username' not in session):
         print(request.endpoint)
         return redirect('/login')
 
 @app.route('/blog', methods=['POST', 'GET'])
-def display_blog():
+def blog():
 
     blog_id = request.args.get('id')
     displayed_user = request.args.get('user')
@@ -113,17 +113,15 @@ def signup():
             username = " "
             username_error = "Invalid username!"
 
-        if len(password) >= 3 and " " not in password and password == verify:
+        if len(password) >= 3 and " " not in password:
             password = password
+            password_error = " "
         else:
-            password = " "
             password_error = "Invalid password!"
 
         if verify == password:
-            verify = verify
-        elif verify != password and password == " ":
-            verify = " "
-        else:
+            verify_error = " "
+        if verify != password or verify == "":
             verify_error = "Passwords don't match!"
 
         rules = (username_error == " ", password_error == " ", verify_error == " ")
